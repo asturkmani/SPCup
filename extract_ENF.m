@@ -69,7 +69,7 @@ index = 0.5*Point_Step + 1;
 f_count = 1;
 while( index + 0.5*Point_Step - 1 <= record_length )
     % take a section of Point_Step points
-    section = Recording(index - 0.5*Point_Step : index + 0.5*Point_Step - 1);
+    section(:,1) = Recording(index - 0.5*Point_Step : index + 0.5*Point_Step - 1);
     % do zero-padding
     section_padded = zeros( 1, Padding_Factor * size(section,1) );
     section_padded(1:size(section,1)) = section(1:size(section,1));
