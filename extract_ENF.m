@@ -1,18 +1,19 @@
-function [result_freq_vs_time] = extract_ENF(Recording, apply_median, moving_median_width)
-%% Extraction of ENF
+function [result_freq_vs_time] = extract_ENF(Recording, apply_median, moving_median_width, Fs, Time_Step, ... 
+                                            Percent_Overlap, Padding_Factor, filter_half_size)
+%% Extraction of ENF (returns an array containing f vs time)
+%%Inputs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+% Recording = the wav signal;
+% apply_median = 0/1;
+% moving_median_width = 50;    %keep it 'even' not odd for simplicity
+% Fs = 1000;                   %1 kHz
+% Time_Step = 0.75;            %seconds across which Fourier is taken
+% Percent_Overlap = 0.5;       %extent of window overlapping
+% Padding_Factor = 8;          %zero padding
+% filter_half_size = 1;        % +/- 1Hz to filter around mean
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-                Fs = 1000;                   %1kHz
-                Time_Step = 0.75;            %seconds (revert:2/median50)
-                Point_Step = Time_Step * Fs; %number of points per section
-                Percent_Overlap = 0.85;      %(1-this) extent of window overlapping
-                Padding_Factor = 8;          %zero padding
-                %filter_lower_50 = 45;        %Hz
-                %filter_upper_50 = 55;        %Hz
-                %filter_lower_60 = 55;        %Hz
-                %filter_upper_60 = 65;        %Hz
-                filter_half_size = 1;        % +/- 5Hz filter   
-%                 moving_median_width = 50;    %keep it even for simplicity
-%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+
+            Point_Step = Time_Step * Fs; %number of points per section
+
 
 % quickly decide if 50Hz or 60Hz to do very narrow filtering later
 % take fft over the Recording

@@ -21,7 +21,7 @@ test_path_name = 'Practice_dataset/Practice_';
 total_test_samples = 50;
 
 % And the number of features is:
-total_features = 27;
+total_features = size(Train_data_normalized, 2);
 
 
 
@@ -33,7 +33,8 @@ total_features = 27;
 for sample_n = 1:total_test_samples
     p_name = [test_path_name num2str(sample_n) '.wav'];
     [test_recording, ~] = audioread(p_name);
-    freq_peaks_test_NOMEDIAN(sample_n,:) = extract_ENF(test_recording,0,999); %moving_median_width
+    freq_peaks_test_NOMEDIAN(sample_n,:) = extract_ENF(test_recording, apply_median, moving_median_width, Fs, ...
+                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
 end
 
 
@@ -58,109 +59,46 @@ for sample_n = 1:total_test_samples
     freq_peaks_test_MEDIAN(sample_n,:) = result_freq_vs_time;
 %     figure; plot( freq_peaks_test_MEDIAN(sample_n,:) );
 end
-freq_peaks_test_MEDIAN = freq_peaks_test_NOMEDIAN;
+if( ~apply_median )
+    freq_peaks_test_MEDIAN = freq_peaks_test_NOMEDIAN;
+end
 
-    feature_mean_array                 = zeros(1,total_test_samples);
-    feature_variance_array             = zeros(1,total_test_samples);
-    feature_range_array                = zeros(1,total_test_samples);
-    feature_approx_variance_array      = zeros(1,total_test_samples);
-    feature_detailed_variance_L1_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L2_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L3_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L4_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L5_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L6_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L7_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L8_array = zeros(1,total_test_samples);
-    feature_detailed_variance_L9_array = zeros(1,total_test_samples);
-    feature_AR1_array                  = zeros(1,total_test_samples);
-    feature_AR2_array                  = zeros(1,total_test_samples);
-    feature_AR_variance                = zeros(1,total_test_samples);
 
-    feature_median_array               = zeros(1,total_test_samples);
-    feature_mode_array                 = zeros(1,total_test_samples);
-    feature_skewness_array             = zeros(1,total_test_samples);
-    feature_kurtosis_array             = zeros(1,total_test_samples);
-    feature_min_array                  = zeros(1,total_test_samples);
-    feature_max_array                  = zeros(1,total_test_samples);
-    feature_mean_crossing_array        = zeros(1,total_test_samples);
-    feature_spectral_centroid_array    = zeros(1,total_test_samples);
-    feature_Rt_array                   = zeros(1,total_test_samples);
-    feature_derivative_max_array       = zeros(1,total_test_samples);
-    feature_outlier_ratio_array        = zeros(1,total_test_samples);
 
 for entry_counter = 1:total_test_samples
     freq = freq_peaks_test_MEDIAN(entry_counter,:);
-    extract_Features %% call to extract features from 'freq' %%
-        feature_mean_array(entry_counter)                 = feature_mean;
-        feature_variance_array(entry_counter)             = feature_variance;
-        feature_range_array(entry_counter)                = feature_range;
-        feature_detailed_variance_L1_array(entry_counter) = feature_detailed_variance_L1;
-        feature_detailed_variance_L2_array(entry_counter) = feature_detailed_variance_L2;
-        feature_detailed_variance_L3_array(entry_counter) = feature_detailed_variance_L3;
-        feature_detailed_variance_L4_array(entry_counter) = feature_detailed_variance_L4;
-        feature_detailed_variance_L5_array(entry_counter) = feature_detailed_variance_L5;
-        feature_detailed_variance_L6_array(entry_counter) = feature_detailed_variance_L6;
-        feature_detailed_variance_L7_array(entry_counter) = feature_detailed_variance_L7;
-        feature_detailed_variance_L8_array(entry_counter) = feature_detailed_variance_L8;
-        feature_detailed_variance_L9_array(entry_counter) = feature_detailed_variance_L9;
-        feature_approx_variance_array(entry_counter)      = feature_approx_variance;
-        feature_AR1_array(entry_counter)                  = feature_AR1;
-        feature_AR2_array(entry_counter)                  = feature_AR2;
-        feature_AR_variance(entry_counter)                = feature_AR_variance;
-
-        feature_median_array(entry_counter)               = feature_median;
-        feature_mode_array(entry_counter)                 = feature_mode;
-        feature_skewness_array(entry_counter)             = feature_skewness;
-        feature_kurtosis_array(entry_counter)             = feature_kurtosis;
-        feature_min_array(entry_counter)                  = feature_min;
-        feature_max_array(entry_counter)                  = feature_max;
-        feature_mean_crossing_array(entry_counter)        = feature_mean_crossing;
-        feature_spectral_centroid_array(entry_counter)    = feature_spectral_centroid;
-        feature_Rt_array(entry_counter)                   = feature_Rt;
-        feature_derivative_max_array(entry_counter)       = feature_derivative_max;
-        feature_outlier_ratio_array(entry_counter)        = feature_outlier_ratio;
-
+    [features_array(entry_counter, :)] = extract_Features( freq );
 end
+
 Test_data_MEDIAN = zeros(total_test_samples, total_features);
 
-Test_data_MEDIAN(:,1)  =  feature_mean_array;
-Test_data_MEDIAN(:,2)  =  feature_variance_array;
-Test_data_MEDIAN(:,3)  =  feature_range_array;
-Test_data_MEDIAN(:,4)  =  feature_approx_variance_array;
-Test_data_MEDIAN(:,5)  =  feature_detailed_variance_L1_array;
-Test_data_MEDIAN(:,6)  =  feature_detailed_variance_L2_array;
-Test_data_MEDIAN(:,7)  =  feature_detailed_variance_L3_array;
-Test_data_MEDIAN(:,8)  =  feature_detailed_variance_L4_array;
-Test_data_MEDIAN(:,9)  =  feature_detailed_variance_L5_array;
-Test_data_MEDIAN(:,10) =  feature_detailed_variance_L6_array;
-Test_data_MEDIAN(:,11) =  feature_detailed_variance_L7_array;
-Test_data_MEDIAN(:,12) =  feature_detailed_variance_L8_array;
-Test_data_MEDIAN(:,13) =  feature_detailed_variance_L9_array;
-Test_data_MEDIAN(:,14) =  feature_AR1_array;
-Test_data_MEDIAN(:,15) =  feature_AR2_array;
-Test_data_MEDIAN(:,16) =  feature_AR_variance;
+Test_data_MEDIAN = features_array;
 
-Test_data_MEDIAN(:,17) =  feature_median_array;
-Test_data_MEDIAN(:,18) =  feature_mode_array;
-Test_data_MEDIAN(:,19) =  feature_skewness_array;
-Test_data_MEDIAN(:,20) =  feature_kurtosis_array;
-Test_data_MEDIAN(:,21) =  feature_min_array;
-Test_data_MEDIAN(:,22) =  feature_max_array;
-Test_data_MEDIAN(:,23) =  feature_mean_crossing_array;
-Test_data_MEDIAN(:,24) =  feature_spectral_centroid_array;
-Test_data_MEDIAN(:,25) =  feature_Rt_array;
-Test_data_MEDIAN(:,26) =  feature_derivative_max_array;
-Test_data_MEDIAN(:,27) =  feature_outlier_ratio_array;
+
+
+actual_grid_classes = [1 8 3 6 6 2 7  9 10 4 ...
+                       1 6 2 4 3 9 10 10 1 5 ...
+                       8 2 2 1 4 3 7  10 7 2 ... 9 17 18 28 47
+                       4 4 3 8 7 5 1  9  8 9 ...
+                       5 8 5 3 6 6 10 7  5 9];
+
+
 
 
 %~~ Create: Test_data_MEDIAN_normalized ~~%
-Test_data_MEDIAN_normalized = zeros(total_test_samples, total_features);
+% Test_data_MEDIAN_normalized = zeros(total_test_samples, actual_grid_classes);
 for feature = 1:total_features
     Test_data_MEDIAN_normalized(:,feature) = ...
         ( Test_data_MEDIAN(:,feature) - normalize_mean_param(feature) ) .* ...
         (100 / normalize_max_param(feature)); 
 end
+
+
+
+
+
+
+
 
 
 % % %% Step: do the multi-class ensemble classification based on power or audio

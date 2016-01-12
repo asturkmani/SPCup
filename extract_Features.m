@@ -1,4 +1,8 @@
-%% Getting Features for Training
+function [features_array] = extract_Features( freq )
+%% Getting Features for Training (returns an array containing all features)
+%%Inputs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+% freq = the (ENF) frequency variation vs time (1 array)
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
 
     % Mean
         feature_mean = mean(freq);
@@ -41,7 +45,7 @@
             EstMdl = estimate(model,transpose(freq));
             feature_AR1 = EstMdl.AR{1};
             feature_AR2 = EstMdl.AR{2};
-            feature_AR_variance = log10(EstMdl.Variance);
+            feature_AR_variance = log10(EstMdl.Variance)
         catch
             disp(['------AR Unstable------' num2str(entry_counter) '------']);
             feature_AR1 = 0;
@@ -149,12 +153,20 @@
 
 
 
+% Group all the features in 1 array and return it
+features_array = [feature_mean, feature_variance, feature_range, feature_detailed_variance_L1, ...
+                  feature_detailed_variance_L2, feature_detailed_variance_L3, feature_detailed_variance_L4 ...
+                  feature_detailed_variance_L5, feature_detailed_variance_L6, feature_detailed_variance_L7 ...
+                  feature_detailed_variance_L8, feature_detailed_variance_L9, feature_approx_variance ...
+                  feature_AR_variance, ...
+                  feature_median, feature_mode, feature_skewness, feature_kurtosis, feature_min, feature_max ...
+                  feature_mean_crossing, feature_spectral_centroid, feature_Rt, feature_derivative_max, ...
+                  feature_outlier_ratio, feature_deriv_crossing];
 
-    for grid_counter = 1:9
-        if( grid_counter == class_counter )
-            grid_class(entry_counter, grid_counter) = 1; %else remains 0
-        end
-    end
 
-    clear freq;
+%     for grid_counter = 1:9
+%         if( grid_counter == class_counter )
+%             grid_class(entry_counter, grid_counter) = 1; %else remains 0
+%         end
+%     end
 

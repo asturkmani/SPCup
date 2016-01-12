@@ -45,7 +45,7 @@ clear Class_Multi_General Posterior
 % Class_Multi_General{3} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'allpairs');
 
 t = templateEnsemble('Bag',30,'Tree','type','classification');
-Class_Multi_General{1} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
+Class_Multi_General{1} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
 
 % t = templateEnsemble('Bag',50,'Discriminant','type','classification');
 % Class_Multi_General{3} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
@@ -112,36 +112,36 @@ for i =1:4
     disp([ 'Prob Rank ' num2str(i) ' has acc = ' num2str(acc_p(i)) '%']);
 end
 disp(['Total being: ' num2str(sum(acc_p)) '%']);
-
-max_prob_value_diff = (Max_Prob_Value_1 - Max_Prob_Value_2).';
-
-
-toc
-
-for sample_n = 1:50
-    how_many_grids(sample_n,1) = size( unique( Guess_Grid_Ensemble(sample_n,:) ),2 );
-    how_many_grids(sample_n,2) = ismember( actual_grid_classes(sample_n), Guess_Grid_Ensemble(sample_n,:) );
-end
-disp(['Someone guessed the correct class: ' num2str( sum( how_many_grids(:,2) )) ' times /50']);
-
-
-for sample_n = 1:50
-    for classi_n = 1:n_guesses_grid
-        correct(sample_n,classi_n) = actual_grid_classes(sample_n) == Guess_Grid_Ensemble(sample_n,classi_n) ;
-    end
-    how_many_grids(sample_n,3) = sum( correct(sample_n,:) ) *100/20;
-end
-
-
-for classi_n = 1:n_guesses_grid
-   acc(classi_n,counterz) = sum( correct(:,classi_n) ) * 2;
-end
-counterz = counterz + 1;
-
-for sample_n = 1:50
-%     mode_guess(sample_n,1) = mode( [Guess_Grid_Ensemble(sample_n,3) Guess_Grid_Ensemble(sample_n,9) ...
-%                                 Guess_Grid_Ensemble(sample_n,18)] );
-    mode_guess(sample_n,1) = mode( Guess_Grid_Ensemble(sample_n,:) );
-end
-disp([ 'Mode acc is: ' num2str( sum( mode_guess.' == actual_grid_classes )*2 ) '%' ]);
-
+% 
+% max_prob_value_diff = (Max_Prob_Value_1 - Max_Prob_Value_2).';
+% 
+% 
+% toc
+% 
+% for sample_n = 1:50
+%     how_many_grids(sample_n,1) = size( unique( Guess_Grid_Ensemble(sample_n,:) ),2 );
+%     how_many_grids(sample_n,2) = ismember( actual_grid_classes(sample_n), Guess_Grid_Ensemble(sample_n,:) );
+% end
+% disp(['Someone guessed the correct class: ' num2str( sum( how_many_grids(:,2) )) ' times /50']);
+% 
+% 
+% for sample_n = 1:50
+%     for classi_n = 1:n_guesses_grid
+%         correct(sample_n,classi_n) = actual_grid_classes(sample_n) == Guess_Grid_Ensemble(sample_n,classi_n) ;
+%     end
+%     how_many_grids(sample_n,3) = sum( correct(sample_n,:) ) *100/20;
+% end
+% 
+% 
+% for classi_n = 1:n_guesses_grid
+%    acc(classi_n,counterz) = sum( correct(:,classi_n) ) * 2;
+% end
+% counterz = counterz + 1;
+% 
+% for sample_n = 1:50
+% %     mode_guess(sample_n,1) = mode( [Guess_Grid_Ensemble(sample_n,3) Guess_Grid_Ensemble(sample_n,9) ...
+% %                                 Guess_Grid_Ensemble(sample_n,18)] );
+%     mode_guess(sample_n,1) = mode( Guess_Grid_Ensemble(sample_n,:) );
+% end
+% disp([ 'Mode acc is: ' num2str( sum( mode_guess.' == actual_grid_classes )*2 ) '%' ]);
+% 

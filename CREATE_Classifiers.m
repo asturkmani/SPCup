@@ -1,187 +1,96 @@
 %% Full code to create and save classifiers
     clearvars;
-
-%% READ training data
-    Read_Train_Data;
-
-%% EXTRACT the ENF component frequency across time:
-    apply_median = 0;
-    moving_median_width = 40;
-    Read_ENF_Signal;
-
-%% EXTRACT features from the training data
+    tic
+%% For every grid, and for power/audio readwav/readENF/readFeats
+% All parameters needed for extract_ENF, run 'help extract_ENF' for more details
+apply_median = 0;
+moving_median_width = 50;
+Fs = 1000;
+Time_Step = 0.75;
+Percent_Overlap = 0.75;
+Padding_Factor = 8;
+filter_half_size = 1;
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-        PA=9;PB=10;PC=11;PD=11;PE=11;PF=8;PG=11;PH=11;PI=11;
-        total_entries = PA+PB+PC+PD+PE+PF+PG+PH+PI + 2*(9);
-        total_entries = total_entries*2;
-%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-        feature_mean_array                 = zeros(1,total_entries);
-        feature_variance_array             = zeros(1,total_entries);
-        feature_range_array                = zeros(1,total_entries);
-        feature_approx_variance_array      = zeros(1,total_entries);
-        feature_detailed_variance_L1_array = zeros(1,total_entries);
-        feature_detailed_variance_L2_array = zeros(1,total_entries);
-        feature_detailed_variance_L3_array = zeros(1,total_entries);
-        feature_detailed_variance_L4_array = zeros(1,total_entries);
-        feature_detailed_variance_L5_array = zeros(1,total_entries);
-        feature_detailed_variance_L6_array = zeros(1,total_entries);
-        feature_detailed_variance_L7_array = zeros(1,total_entries);
-        feature_detailed_variance_L8_array = zeros(1,total_entries);
-        feature_detailed_variance_L9_array = zeros(1,total_entries);
-        feature_AR1_array                  = zeros(1,total_entries);
-        feature_AR2_array                  = zeros(1,total_entries);
-        feature_AR_variance                = zeros(1,total_entries);
 
-        feature_median_array               = zeros(1,total_entries);
-        feature_mode_array                 = zeros(1,total_entries);
-        feature_skewness_array             = zeros(1,total_entries);
-        feature_kurtosis_array             = zeros(1,total_entries);
-        feature_min_array                  = zeros(1,total_entries);
-        feature_max_array                  = zeros(1,total_entries);
-        feature_mean_crossing_array        = zeros(1,total_entries);
-        feature_spectral_centroid_array    = zeros(1,total_entries);
-        feature_Rt_array                   = zeros(1,total_entries);
-        feature_derivative_max_array       = zeros(1,total_entries);
-        feature_outlier_ratio_array        = zeros(1,total_entries);
+% Some constants:
+PA=9;PB=10;PC=11;PD=11;PE=11;PF=8;PG=11;PH=11;PI=11;
+grid_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
-        total_features                     = 27;
+train_entries_counter = 1; %index for entry number
 
-        grid_class                         = zeros(total_entries, 9);%total_entries, #grids
-        grid_class_multi                   = zeros(total_entries,1); %multi class classifier
-%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-entry_counter = 1;
-class_counter = 1;
-
-for grid_name = 'A':'I'
-    num_of_power = strcat('P', grid_name);
-
-% Audio
+for grid_name_idx = 'A':'I'
+    % For Audio
     for i = 1:2
+        % Get the recording signal
+        path_to_recording = ['Grid_' grid_name_idx '\Audio_recordings\Train_Grid_' grid_name_idx '_A' num2str(i) '.wav'];
+        [recording_signal, ~] = audioread(path_to_recording);
+        % Extract the ENF from the recording
+        [result_freq_vs_time1] = extract_ENF(recording_signal(1:size(recording_signal)/2), apply_median, moving_median_width, Fs, ...
+                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+        [result_freq_vs_time2] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
+                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+        % Extract features from the ENF
+        [features_array] = extract_Features( result_freq_vs_time1 );
+
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+        Train_data(train_entries_counter, :) = features_array;
+        Train_data_class(train_entries_counter, 1) = find( ismember(grid_names, grid_name_idx) );
+        Train_data_type(train_entries_counter, 1) = 1;
+        train_entries_counter = train_entries_counter + 1;
         
-        for j = 'A':'B'
-        freq = eval(['freq_peaks_' grid_name '_A' num2str(i) j]);
-        extract_Features;
+        % Extract features from the ENF2
+        [features_array] = extract_Features( result_freq_vs_time2 );
 
-        grid_class_multi(entry_counter) = class_counter;
-
-            feature_mean_array(entry_counter)                 = feature_mean;
-            feature_variance_array(entry_counter)             = feature_variance;
-            feature_range_array(entry_counter)                = feature_range;
-            feature_detailed_variance_L1_array(entry_counter) = feature_detailed_variance_L1;
-            feature_detailed_variance_L2_array(entry_counter) = feature_detailed_variance_L2;
-            feature_detailed_variance_L3_array(entry_counter) = feature_detailed_variance_L3;
-            feature_detailed_variance_L4_array(entry_counter) = feature_detailed_variance_L4;
-            feature_detailed_variance_L5_array(entry_counter) = feature_detailed_variance_L5;
-            feature_detailed_variance_L6_array(entry_counter) = feature_detailed_variance_L6;
-            feature_detailed_variance_L7_array(entry_counter) = feature_detailed_variance_L7;
-            feature_detailed_variance_L8_array(entry_counter) = feature_detailed_variance_L8;
-            feature_detailed_variance_L9_array(entry_counter) = feature_detailed_variance_L9;
-            feature_approx_variance_array(entry_counter)      = feature_approx_variance;
-            feature_AR1_array(entry_counter)                  = feature_AR1;
-            feature_AR2_array(entry_counter)                  = feature_AR2;
-            feature_AR_variance(entry_counter)                = feature_AR_variance;
-
-            feature_median_array(entry_counter)               = feature_median;
-            feature_mode_array(entry_counter)                 = feature_mode;
-            feature_skewness_array(entry_counter)             = feature_skewness;
-            feature_kurtosis_array(entry_counter)             = feature_kurtosis;
-            feature_min_array(entry_counter)                  = feature_min;
-            feature_max_array(entry_counter)                  = feature_max;
-            feature_mean_crossing_array(entry_counter)        = feature_mean_crossing;
-            feature_spectral_centroid_array(entry_counter)    = feature_spectral_centroid;
-            feature_Rt_array(entry_counter)                   = feature_Rt;
-            feature_derivative_max_array(entry_counter)       = feature_derivative_max;
-            feature_outlier_ratio_array(entry_counter)        = feature_outlier_ratio;
-
-        entry_counter = entry_counter + 1;
-        end
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+        Train_data(train_entries_counter, :) = features_array;
+        Train_data_class(train_entries_counter, 1) = find( ismember(grid_names, grid_name_idx) );
+        Train_data_type(train_entries_counter, 1) = 1;
+        train_entries_counter = train_entries_counter + 1;
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
     end
 
-% Power
-    for i = 1:eval(num_of_power)
-        for j = 'A':'B'
-        freq = eval(['freq_peaks_' grid_name '_P' num2str(i) j]);
-        extract_Features;
+    % For Power
+    num_of_power_str = strcat('P', grid_name_idx);
+    num_of_power_samples = eval(num_of_power_str);
+    for i = 1:num_of_power_samples
+        % Get the recording signal
+        path_to_recording = ['Grid_' grid_name_idx '\Power_recordings\Train_Grid_' grid_name_idx '_P' num2str(i) '.wav'];
+        [recording_signal, ~] = audioread(path_to_recording);
+        % Extract the ENF from the recording
+        [result_freq_vs_time1] = extract_ENF(recording_signal(1:size(recording_signal)/2), apply_median, moving_median_width, Fs, ...
+                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+        [result_freq_vs_time2] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
+                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+        % Extract features from the ENF
+        [features_array] = extract_Features( result_freq_vs_time1 );
 
-        grid_class_multi(entry_counter) = class_counter;
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+        Train_data(train_entries_counter, :) = features_array;
+        Train_data_class(train_entries_counter, 1) = find( ismember(grid_names, grid_name_idx) );
+        Train_data_type(train_entries_counter, 1) = 1;
+        train_entries_counter = train_entries_counter + 1;
+        
+        % Extract features from the ENF2
+        [features_array] = extract_Features( result_freq_vs_time2 );
 
-            feature_mean_array(entry_counter)                 = feature_mean;
-            feature_variance_array(entry_counter)             = feature_variance;
-            feature_range_array(entry_counter)                = feature_range;
-            feature_detailed_variance_L1_array(entry_counter) = feature_detailed_variance_L1;
-            feature_detailed_variance_L2_array(entry_counter) = feature_detailed_variance_L2;
-            feature_detailed_variance_L3_array(entry_counter) = feature_detailed_variance_L3;
-            feature_detailed_variance_L4_array(entry_counter) = feature_detailed_variance_L4;
-            feature_detailed_variance_L5_array(entry_counter) = feature_detailed_variance_L5;
-            feature_detailed_variance_L6_array(entry_counter) = feature_detailed_variance_L6;
-            feature_detailed_variance_L7_array(entry_counter) = feature_detailed_variance_L7;
-            feature_detailed_variance_L8_array(entry_counter) = feature_detailed_variance_L8;
-            feature_detailed_variance_L9_array(entry_counter) = feature_detailed_variance_L9;
-            feature_approx_variance_array(entry_counter)      = feature_approx_variance;
-            feature_AR1_array(entry_counter)                  = feature_AR1;
-            feature_AR2_array(entry_counter)                  = feature_AR2;
-            feature_AR_variance(entry_counter)                = feature_AR_variance;
-
-            feature_median_array(entry_counter)               = feature_median;
-            feature_mode_array(entry_counter)                 = feature_mode;
-            feature_skewness_array(entry_counter)             = feature_skewness;
-            feature_kurtosis_array(entry_counter)             = feature_kurtosis;
-            feature_min_array(entry_counter)                  = feature_min;
-            feature_max_array(entry_counter)                  = feature_max;
-            feature_mean_crossing_array(entry_counter)        = feature_mean_crossing;
-            feature_spectral_centroid_array(entry_counter)    = feature_spectral_centroid;
-            feature_Rt_array(entry_counter)                   = feature_Rt;
-            feature_derivative_max_array(entry_counter)       = feature_derivative_max;
-            feature_outlier_ratio_array(entry_counter)        = feature_outlier_ratio;
-
-        entry_counter = entry_counter + 1;
-        end
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
+        Train_data(train_entries_counter, :) = features_array;
+        Train_data_class(train_entries_counter, 1) = find( ismember(grid_names, grid_name_idx) );
+        Train_data_type(train_entries_counter, 1) = 1;
+        train_entries_counter = train_entries_counter + 1;
+        %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
     end
-
-    class_counter = class_counter + 1;
 end
+toc
+disp('Done Reading audio, ENF extraction and Train Feature Extraction!');
 
-disp('Done Feature Extraction');
-
-%% Collect features and normalize
-Train_data = zeros(total_entries, total_features);
-
-Train_data(:,1)  =  feature_mean_array;
-Train_data(:,2)  =  feature_variance_array;
-Train_data(:,3)  =  feature_range_array;
-Train_data(:,4)  =  feature_approx_variance_array;
-Train_data(:,5)  =  feature_detailed_variance_L1_array;
-Train_data(:,6)  =  feature_detailed_variance_L2_array;
-Train_data(:,7)  =  feature_detailed_variance_L3_array;
-Train_data(:,8)  =  feature_detailed_variance_L4_array;
-Train_data(:,9)  =  feature_detailed_variance_L5_array;
-Train_data(:,10) =  feature_detailed_variance_L6_array;
-Train_data(:,11) =  feature_detailed_variance_L7_array;
-Train_data(:,12) =  feature_detailed_variance_L8_array;
-Train_data(:,13) =  feature_detailed_variance_L9_array;
-Train_data(:,14) =  feature_AR1_array;
-Train_data(:,15) =  feature_AR2_array;
-Train_data(:,16) =  feature_AR_variance;
-
-Train_data(:,17) =  feature_median_array;
-Train_data(:,18) =  feature_mode_array;
-Train_data(:,19) =  feature_skewness_array;
-Train_data(:,20) =  feature_kurtosis_array;
-Train_data(:,21) =  feature_min_array;
-Train_data(:,22) =  feature_max_array;
-Train_data(:,23) =  feature_mean_crossing_array;
-Train_data(:,24) =  feature_spectral_centroid_array;
-Train_data(:,25) =  feature_Rt_array;
-Train_data(:,26) =  feature_derivative_max_array;
-Train_data(:,27) =  feature_outlier_ratio_array;
-
+tic
 %%~~ Create: Train_data_normalized ~~%%
-[Train_data_normalized, normalize_max_param, normalize_mean_param] = normalize_Features(Train_data, total_features);
+[Train_data_normalized, normalize_max_param, normalize_mean_param] = normalize_Features(Train_data, Train_data_class);
+toc
+disp('Done normalization!');
 
 
-
-
-%% READ 
 
 
 
@@ -191,28 +100,6 @@ BRUTE_TEST2_prob;
 
 
 
-
-
-
-
-
-
-%% TRAIN classifiers
-
-% Get multi-class classifiers for GENERAL:
-% Class_Multi_General = CREATE_Classifiers_for_General(Train_data_normalized, grid_class_multi);
-
-
-% Get multi-class classifiers for GENERAL:
-% Class_OVA_General = CREATE_Classifiers_for_General_OVA(Train_data_normalized, grid_class_multi);
-
-
-% Get Binary classifiers for GENERAL:
-% Class_Binary_General = CREATE_Classifiers_for_General_Binary(Train_data_normalized, grid_class_multi);
-
-
-% Get Ternary classifiers for GENERAL:
-% Class_Ternary_General = CREATE_Classifiers_for_General_Ternary(Train_data_normalized, grid_class_multi);
 
 
 

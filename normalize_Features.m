@@ -1,15 +1,12 @@
-function [Train_data_normalized, normalize_max_param, normalize_mean_param] = normalize_Features(Train_data, total_features)
+function [Train_data_normalized, normalize_max_param, normalize_mean_param] = normalize_Features(Train_data, Train_data_class)
+%% Input a train data matrix, with corresponding grid classes
+% Outputs the normalized features across grids
+% And the normalize_max_param and normalize_mean_param
 
-        PA=9;PB=10;PC=11;PD=11;PE=11;PF=8;PG=11;PH=11;PI=11;
-        total_entries = PA+PB+PC+PD+PE+PF+PG+PH+PI + 2*(9);
-        total_entries = total_entries*2;
+%% Get normalization parameters:
+total_entries = size(Train_data, 1);
+total_features = size(Train_data, 2);
 
-% Get normalization parameters:
-ind = 1;
-for grid_name = 'A':'I'
-    map_letters(ind) = grid_name; %Map numbers -> letters
-    ind = ind + 1;
-end
 
 normalize_max_param  = zeros(1,total_features);
 normalize_mean_param = zeros(1,total_features);
@@ -21,12 +18,15 @@ for feature = 1:total_features
 
     for grid_ind = 1:9
 
-        grid_name = map_letters(grid_ind);
-        num_of_power = strcat('P', grid_name);
-        entries_in_grid = eval(num_of_power) + 2;
-
         first_grid_entry = last_grid_entry + 1;             %pointer to the first entry in each grid
-        last_grid_entry = last_grid_entry + entries_in_grid;%pointer to the last entry in each grid
+        if (grid_ind == 9)
+            last_grid_entry = total_entries;
+        else
+            last_grid_entry = first_grid_entry;
+            while( Train_data_class(last_grid_entry) == grid_ind )
+                last_grid_entry = last_grid_entry + 1;
+            end
+        end
 
         for entry = first_grid_entry:last_grid_entry
             mean_each_grid(grid_ind) = mean_each_grid(grid_ind) + Train_data(entry,feature);
