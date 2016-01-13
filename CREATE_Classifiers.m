@@ -6,7 +6,7 @@
 apply_median = 0;
 moving_median_width = 50;
 Fs = 1000;
-Time_Step = 0.75;
+Time_Step = 0.5;
 Percent_Overlap = 0.85;
 Padding_Factor = 8;
 filter_half_size = 1;
@@ -29,36 +29,41 @@ for grid_name_idx = 'A':'I'
     % For Audio
     
     grid_class_number = find( ismember(grid_names, grid_name_idx) );
-    
+    recording_signal = [];
     parfor i = 1:2
         % Get the recording signal
         path_to_recording = ['Grid_' grid_name_idx '/Audio_recordings/Train_Grid_' grid_name_idx '_A' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);
         % Extract the ENF from the recording
-        [result_freq_vs_time] = extract_ENF(recording_signal(1:size(recording_signal)*1/2), apply_median, moving_median_width, Fs, ...
-                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-        % Extract features from the ENF
-        [features_array] = extract_Features( result_freq_vs_time );
-
+        sizeT = size(recording_signal,1);
+        temp = 1;
+        while(temp<sizeT)
+            %[result_freq_vs_time] = extract_ENF(recording_signal((sizeT*(j-1)/10)+1:sizeT*j/10), apply_median, moving_median_width, Fs, ...
+             %                   Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            if(sizeT-temp>=360000)
+                
+             [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+360000)), apply_median, moving_median_width, Fs, ...
+                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            else
+             [result_freq_vs_time] = extract_ENF(recording_signal((sizeT-360000):sizeT), apply_median, moving_median_width, Fs, ...
+                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            
+            end
+            
+                     % Extract features from the ENF
+            [features_array] = extract_Features( result_freq_vs_time );
+        
         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
         Train_data = [Train_data; features_array];
         Train_data_class = [Train_data_class; grid_class_number];
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
-
-%                 %~~~~~~~ Divide by 2 ~~~~~~~~~%
-%         [result_freq_vs_time] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
-%                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-%         % Extract features from the ENF
-%         [features_array] = extract_Features( result_freq_vs_time );
-% 
-%         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-%         Train_data = [Train_data; features_array];
-%         Train_data_class = [Train_data_class; grid_class_number];
-%         Train_data_type = [Train_data_type; 1];
-%         train_entries_counter = train_entries_counter + 1;
+                    temp = temp + 360000; 
+        end
     end
-
     % For Power
     num_of_power_str = strcat('P', grid_name_idx);
     num_of_power_samples = eval(num_of_power_str);
@@ -67,28 +72,37 @@ for grid_name_idx = 'A':'I'
         path_to_recording = ['Grid_' grid_name_idx '/Power_recordings/Train_Grid_' grid_name_idx '_P' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);
         % Extract the ENF from the recording
-        [result_freq_vs_time] = extract_ENF(recording_signal(1:size(recording_signal)*1/2), apply_median, moving_median_width, Fs, ...
-                                Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-        % Extract features from the ENF
-        [features_array] = extract_Features( result_freq_vs_time );
-
+        sizeT = size(recording_signal,1);
+        temp = 1;
+        while(temp<sizeT)
+            %[result_freq_vs_time] = extract_ENF(recording_signal((sizeT*(j-1)/10)+1:sizeT*j/10), apply_median, moving_median_width, Fs, ...
+             %                   Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            if(sizeT-temp>=720000)
+                
+             [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+720000)), apply_median, moving_median_width, Fs, ...
+                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            else
+             [result_freq_vs_time] = extract_ENF(recording_signal((sizeT-720000):sizeT), apply_median, moving_median_width, Fs, ...
+                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
+            
+            
+            end
+            
+                     % Extract features from the ENF
+            [features_array] = extract_Features( result_freq_vs_time );
+        
         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
         Train_data = [Train_data; features_array];
         Train_data_class = [Train_data_class; grid_class_number];
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
-        
-%         %~~~~~~~ Divide by 2 ~~~~~~~~~%
-%         [result_freq_vs_time] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
-%                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-%         % Extract features from the ENF
-%         [features_array] = extract_Features( result_freq_vs_time );
-% 
-%         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-%         Train_data = [Train_data; features_array];
-%         Train_data_class = [Train_data_class; grid_class_number];
-%         Train_data_type = [Train_data_type; 1];
-%         train_entries_counter = train_entries_counter + 1;
+                    temp = temp + 720000; 
+        end
+               
+   
+
     end
 end
 disp('Done Reading audio, ENF extraction and Train Feature Extraction!');
