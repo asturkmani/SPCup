@@ -46,17 +46,6 @@ for grid_name_idx = 'A':'I'
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
 
-%                 %~~~~~~~ Divide by 2 ~~~~~~~~~%
-%         [result_freq_vs_time] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
-%                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-%         % Extract features from the ENF
-%         [features_array] = extract_Features( result_freq_vs_time );
-% 
-%         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-%         Train_data = [Train_data; features_array];
-%         Train_data_class = [Train_data_class; grid_class_number];
-%         Train_data_type = [Train_data_type; 1];
-%         train_entries_counter = train_entries_counter + 1;
     end
 
     % For Power
@@ -77,18 +66,7 @@ for grid_name_idx = 'A':'I'
         Train_data_class = [Train_data_class; grid_class_number];
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
-        
-%         %~~~~~~~ Divide by 2 ~~~~~~~~~%
-%         [result_freq_vs_time] = extract_ENF(recording_signal(size(recording_signal)/2:size(recording_signal)), apply_median, moving_median_width, Fs, ...
-%                                 Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-%         % Extract features from the ENF
-%         [features_array] = extract_Features( result_freq_vs_time );
-% 
-%         %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
-%         Train_data = [Train_data; features_array];
-%         Train_data_class = [Train_data_class; grid_class_number];
-%         Train_data_type = [Train_data_type; 1];
-%         train_entries_counter = train_entries_counter + 1;
+
     end
 end
 disp('Done Reading audio, ENF extraction and Train Feature Extraction!');

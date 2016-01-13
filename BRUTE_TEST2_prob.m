@@ -44,7 +44,7 @@ clear Class_Multi_General Posterior
 % t = templateEnsemble('Bag',30,'Tree','type','classification');
 % Class_Multi_General{3} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'allpairs');
 
-t = templateEnsemble('Bag',3000,'Tree','type','classification');
+t = templateEnsemble('Bag',30,'Tree','type','classification');
 Class_Multi_General{1} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
 
 
