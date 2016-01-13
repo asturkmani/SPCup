@@ -44,8 +44,13 @@ clear Class_Multi_General Posterior
 % t = templateEnsemble('Bag',30,'Tree','type','classification');
 % Class_Multi_General{3} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'allpairs');
 
-t = templateEnsemble('Bag',30,'Tree','type','classification');
+t = templateEnsemble('Bag',3000,'Tree','type','classification');
 Class_Multi_General{1} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
+
+
+% t = templateSVM('Standardize',1,'KernelFunction','gaussian');
+% Class_Multi_General{1} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1);
+
 
 % t = templateEnsemble('Bag',50,'Discriminant','type','classification');
 % Class_Multi_General{3} = fitcecoc(Train_data_normalized,grid_class_multi,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
@@ -64,19 +69,17 @@ disp('done training')
 
 
 
-
-tic
 n_guesses_grid = size(Class_Multi_General, 2);
 Guess_Grid_Ensemble = zeros(total_test_samples, n_guesses_grid);
 Guess_Grid_Final = zeros(1, total_test_samples);
 
-for sample_n = 1:total_test_samples
+parfor sample_n = 1:total_test_samples
 
     for classi_n = 1:n_guesses_grid
             [label,~,~,Posterior(classi_n,sample_n,:)] = predict( Class_Multi_General{classi_n}, Test_data_MEDIAN_normalized(sample_n,:) );
             Guess_Grid_Ensemble(sample_n, classi_n) = label;
     end
-sample_n
+sample_n;
 end
 
 actual_grid_classes = [1 8 3 6 6 2 7  9 10 4 ...

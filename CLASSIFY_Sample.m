@@ -30,7 +30,7 @@ total_features = size(Train_data_normalized, 2);
 
 
 %% Step: read ENF with no median, to see if power or audio
-for sample_n = 1:total_test_samples
+parfor sample_n = 1:total_test_samples
     p_name = [test_path_name num2str(sample_n) '.wav'];
     [test_recording, ~] = audioread(p_name);
     freq_peaks_test_NOMEDIAN(sample_n,:) = extract_ENF(test_recording, apply_median, moving_median_width, Fs, ...
@@ -65,7 +65,7 @@ end
 
 
 
-for entry_counter = 1:total_test_samples
+parfor entry_counter = 1:total_test_samples
     freq = freq_peaks_test_MEDIAN(entry_counter,:);
     [features_array(entry_counter, :)] = extract_Features( freq );
 end
@@ -87,7 +87,7 @@ actual_grid_classes = [1 8 3 6 6 2 7  9 10 4 ...
 
 %~~ Create: Test_data_MEDIAN_normalized ~~%
 % Test_data_MEDIAN_normalized = zeros(total_test_samples, actual_grid_classes);
-for feature = 1:total_features
+parfor feature = 1:total_features
     Test_data_MEDIAN_normalized(:,feature) = ...
         ( Test_data_MEDIAN(:,feature) - normalize_mean_param(feature) ) .* ...
         (100 / normalize_max_param(feature)); 

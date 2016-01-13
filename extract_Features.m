@@ -40,28 +40,32 @@ function [features_array] = extract_Features( freq )
         feature_approx_variance = log10( var( Approximated_sig(:,1) ) );
 
     % Computing the AR model 
-        model = arima('ARLags',1:2,'Constant',0);
-        try
-            EstMdl = estimate(model,transpose(freq));
-            feature_AR1 = EstMdl.AR{1};
-            feature_AR2 = EstMdl.AR{2};
-            feature_AR_variance = log10(EstMdl.Variance)
-        catch
-            disp(['------AR Unstable------' num2str(entry_counter) '------']);
-            feature_AR1 = 0;
-            feature_AR2 = 0;
-            feature_AR_variance = 0;
-        end
+%         model = arima('ARLags',1:2,'Constant',0);
+%         try
+%             EstMdl = estimate(model,transpose(freq));
+%             feature_AR1 = EstMdl.AR{1};
+%             feature_AR2 = EstMdl.AR{2};
+%             feature_AR_variance = log10(EstMdl.Variance)
+%         catch
+%             disp(['------AR Unstable------' num2str(entry_counter) '------']);
+%             feature_AR1 = 0;
+%             feature_AR2 = 0;
+%             feature_AR_variance = 0;
+%         end
+% 
+%            model = ar(freq,2);
+%            Bfeature_AR1 = model.a(1);
+%            Bfeature_AR2 = model.a(2);
+%            if(feature_AR1 == Bfeature_AR1)
+%                disp('--- 1 is correct ---');
+%            end
+%            if(feature_AR2 == Bfeature_AR2)
+%                disp(' --- 2 is correct ---');
+%            end
 
-           model = ar(freq,2);
-           Bfeature_AR1 = model.a(1);
-           Bfeature_AR2 = model.a(2);
-           if(feature_AR1 == Bfeature_AR1)
-               disp('--- 1 is correct ---');
-           end
-           if(feature_AR2 == Bfeature_AR2)
-               disp(' --- 2 is correct ---');
-           end
+        [model,feature_AR_variance] = arburg(freq,2);
+        feature_AR1 = model(1);
+        feature_AR2 = model(2);
 
 %%Our added features:
 
@@ -155,13 +159,20 @@ function [features_array] = extract_Features( freq )
 
 % Group all the features in 1 array and return it
 features_array = [feature_mean, feature_variance, feature_range, feature_detailed_variance_L1, ...
-                  feature_detailed_variance_L2, feature_detailed_variance_L3, feature_detailed_variance_L4 ...
+                  feature_detailed_variance_L2, ...
+                  feature_detailed_variance_L3, feature_detailed_variance_L4 ...
                   feature_detailed_variance_L5, feature_detailed_variance_L6, feature_detailed_variance_L7 ...
-                  feature_detailed_variance_L8, feature_detailed_variance_L9, feature_approx_variance ...
-                  feature_AR_variance, ...
-                  feature_median, feature_mode, feature_skewness, feature_kurtosis, feature_min, feature_max ...
+                  feature_detailed_variance_L8, feature_detailed_variance_L9,... feature_approx_variance ...
+                  feature_AR1, feature_AR2, feature_AR_variance, ...
+                  feature_median, feature_mode, ...
+                  feature_skewness, feature_kurtosis,...
+                  feature_min, feature_max ...
                   feature_mean_crossing, feature_spectral_centroid, feature_Rt, feature_derivative_max, ...
-                  feature_outlier_ratio, feature_deriv_crossing];
+                  ...
+                  feature_outlier_ratio, ...
+                  feature_deriv_crossing
+                  
+                  ];
 
 
 %     for grid_counter = 1:9

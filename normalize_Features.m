@@ -11,7 +11,7 @@ total_features = size(Train_data, 2);
 normalize_max_param  = zeros(1,total_features);
 normalize_mean_param = zeros(1,total_features);
 
-for feature = 1:total_features
+parfor feature = 1:total_features
 
     mean_each_grid = zeros(1,9); %the mean in each grid for this feature
     last_grid_entry = 0;
@@ -26,6 +26,7 @@ for feature = 1:total_features
             while( Train_data_class(last_grid_entry) == grid_ind )
                 last_grid_entry = last_grid_entry + 1;
             end
+            last_grid_entry = last_grid_entry - 1;
         end
 
         for entry = first_grid_entry:last_grid_entry
