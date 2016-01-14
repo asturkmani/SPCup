@@ -39,33 +39,33 @@ function [features_array] = extract_Features( freq )
         end
         feature_approx_variance = log10( var( Approximated_sig(:,1) ) );
 
-    % Computing the AR model 
-%         model = arima('ARLags',1:2,'Constant',0);
-%         try
-%             EstMdl = estimate(model,transpose(freq));
-%             feature_AR1 = EstMdl.AR{1};
-%             feature_AR2 = EstMdl.AR{2};
-%             feature_AR_variance = log10(EstMdl.Variance)
-%         catch
-%             disp(['------AR Unstable------' num2str(entry_counter) '------']);
-%             feature_AR1 = 0;
-%             feature_AR2 = 0;
-%             feature_AR_variance = 0;
-%         end
-% 
-%            model = ar(freq,2);
-%            Bfeature_AR1 = model.a(1);
-%            Bfeature_AR2 = model.a(2);
-%            if(feature_AR1 == Bfeature_AR1)
-%                disp('--- 1 is correct ---');
-%            end
-%            if(feature_AR2 == Bfeature_AR2)
-%                disp(' --- 2 is correct ---');
-%            end
+%     Computing the AR model 
+        model = arima('ARLags',1:2,'Constant',0);
+        try
+            EstMdl = estimate(model,transpose(freq));
+            feature_AR1 = EstMdl.AR{1};
+            feature_AR2 = EstMdl.AR{2};
+            feature_AR_variance = log10(EstMdl.Variance)
+        catch
+            disp(['------AR Unstable------------']);
+            feature_AR1 = 0;
+            feature_AR2 = 0;
+            feature_AR_variance = 0;
+        end
 
-        [model,feature_AR_variance] = arburg(freq,2);
-        feature_AR1 = model(1);
-        feature_AR2 = model(2);
+           model = ar(freq,2);
+           Bfeature_AR1 = model.a(1);
+           Bfeature_AR2 = model.a(2);
+           if(feature_AR1 == Bfeature_AR1)
+               disp('--- 1 is correct ---');
+           end
+           if(feature_AR2 == Bfeature_AR2)
+               disp(' --- 2 is correct ---');
+           end
+
+%         [model,feature_AR_variance] = arburg(freq,2);
+%         feature_AR1 = model(1);
+%         feature_AR2 = model(2);
 
 %%Our added features:
 
@@ -173,11 +173,3 @@ features_array = [feature_mean, feature_variance, feature_range, feature_detaile
                   feature_deriv_crossing
                   
                   ];
-
-
-%     for grid_counter = 1:9
-%         if( grid_counter == class_counter )
-%             grid_class(entry_counter, grid_counter) = 1; %else remains 0
-%         end
-%     end
-
