@@ -38,9 +38,6 @@ for grid_name_idx = 'A':'I'
         sizeT = size(recording_signal,1);
         temp = 1;
         while(temp<sizeT)
-            %[result_freq_vs_time] = extract_ENF(recording_signal((sizeT*(j-1)/10)+1:sizeT*j/10), apply_median, moving_median_width, Fs, ...
-             %                   Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-            
             if(sizeT-temp>=360000)
                 
              [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+360000)), apply_median, moving_median_width, Fs, ...
@@ -74,20 +71,14 @@ for grid_name_idx = 'A':'I'
         % Extract the ENF from the recording
         sizeT = size(recording_signal,1);
         temp = 1;
-        while(temp<sizeT)
-            %[result_freq_vs_time] = extract_ENF(recording_signal((sizeT*(j-1)/10)+1:sizeT*j/10), apply_median, moving_median_width, Fs, ...
-             %                   Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-            
+        while(temp<sizeT)      
             if(sizeT-temp>=720000)
                 
              [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+720000)), apply_median, moving_median_width, Fs, ...
                                  Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-            
             else
              [result_freq_vs_time] = extract_ENF(recording_signal((sizeT-720000):sizeT), apply_median, moving_median_width, Fs, ...
                                  Time_Step, Percent_Overlap, Padding_Factor, filter_half_size);
-            
-            
             end
             
                      % Extract features from the ENF
@@ -105,16 +96,24 @@ for grid_name_idx = 'A':'I'
 end
 disp('Done Reading audio, ENF extraction and Train Feature Extraction!');
 %%~~ Create: Train_data_normalized ~~%%
+Train_data_Audio = Train_data(Train_data_type==1,:);
+Train_data_Audio_Class = Train_data_class(Train_data_type==1);
+
+Train_data_Power = Train_data(Train_data_type==0,:);
+Train_data_Power_Class = Train_data_class(Train_data_type==0);
+
+[Train_data_Audio_normalized, normalize_max_param_Audio, normalize_mean_param_Audio] = normalize_Features(Train_data_Audio, Train_data_Audio_Class);
+[Train_data_Power_normalized, normalize_max_param_Power, normalize_mean_param_Power] = normalize_Features(Train_data_Power, Train_data_Power_Class);
 [Train_data_normalized, normalize_max_param, normalize_mean_param] = normalize_Features(Train_data, Train_data_class);
 
 disp('Done normalization!');
 
 
 
-
-
-CLASSIFY_Sample;
-BRUTE_TEST2_prob;
+Test_Practice;
+% 
+% CLASSIFY_Sample;
+% BRUTE_TEST2_prob;
 
 toc
 beep
