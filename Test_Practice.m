@@ -1,4 +1,4 @@
-%% Get Practice data and classify
+clea%% Get Practice data and classify
 
 disp('Started Test_Practice');
 clear Class_Multi_General Posterior

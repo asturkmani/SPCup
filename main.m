@@ -58,7 +58,7 @@ for grid_name_idx = 'A':'I'
         Train_data_class = [Train_data_class; grid_class_number];
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
-        temp = temp + 360000; 
+        temp = temp + 180000; 
         end
     end
     % For Power
@@ -89,7 +89,7 @@ for grid_name_idx = 'A':'I'
         Train_data_class = [Train_data_class; grid_class_number];
         Train_data_type = [Train_data_type; 1];
         train_entries_counter = train_entries_counter + 1;
-                    temp = temp + 720000; 
+                    temp = temp + 360000; 
         end
 
     end
