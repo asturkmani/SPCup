@@ -39,20 +39,12 @@ total_features = size(Train_data_Audio_normalized, 2);
 
 tic
 t = templateEnsemble('Bag',30,'Tree','type','classification');
-Class_Multi_General{1} = fitcecoc(Train_data_Power_normalized,Train_data_Power_Class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
-
-t = templateEnsemble('Bag',30,'Tree','type','classification');
-Class_Multi_General{1} = fitcecoc(Train_data_Audio_normalized,Train_data_Audio_Class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
-
-t = templateEnsemble('Bag',30,'Tree','type','classification');
-Class_Multi_General{2} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
+Class_Multi_General{1} = fitcecoc(Train_data_normalized,Train_data_class,'Learners',t,'FitPosterior',1,'Coding', 'binarycomplete');
  
 disp('Done training classifiers')
 toc
 test_Type = zeros(50,1);
-test_Audio_ENF = zeros(22,total_features);
-test_Power_ENF = zeros(28,total_features);
-features_array = zeros(total_test_samples,size(features_array,2));
+features_array = zeros(total_test_samples,total_features);
 tic
 % Step: read ENF with no median, to see if power or audio
 parfor sample_n = 1:total_test_samples
@@ -87,28 +79,10 @@ actual_grid_classes = [1 8 3 6 6 2 7  9 10 4 ...
                        4 4 3 8 7 5 1  9  8 9 ...
                        5 8 5 3 6 6 10 7  5 9];
 
-actual_grid_classes_audio = actual_grid_classes(test_Type==1);
-features_array_Audio = features_array(test_Type==1,:);
-features_Audio_order = order_test_data(test_Type==1);
-
-actual_grid_classes_power = actual_grid_classes(test_Type==0);
-features_array_Power = features_array(test_Type==0,:);
-features_Power_order = order_test_data(test_Type==0);
-
-features_array2 = zeros(size(features_array));
-
 % Normalize features
 tic
 for feature = 1:total_features
-    features_array_Audio(:,feature) = ...
-        ( features_array_Audio(:,feature) - normalize_mean_param_Audio(feature) ) .* ...
-        (100 / normalize_max_param_Audio(feature)); 
-   
-    features_array_Power(:,feature) = ...
-        ( features_array_Power(:,feature) - normalize_mean_param_Power(feature) ) .* ...
-        (100 / normalize_max_param_Power(feature)); 
-    
-    features_array2(:,feature) = ...
+features_array(:,feature) = ...
         ( features_array(:,feature) - normalize_mean_param(feature) ) .* ...
         (100 / normalize_max_param(feature)); 
 end
@@ -128,42 +102,19 @@ Guess_Grid_Final = zeros(1, total_test_samples);
 
 tic
 
-classifier1 = Class_Multi_General{1};
-classifier2 = Class_Multi_General{2};
-classifier3 = Class_Multi_General{3};
+classifier = Class_Multi_General{1};
 
-Posterior1 = zeros(1,total_test_samples,9);
-Posterior2 = zeros(1,total_test_samples,9);
-Posterior3 = zeros(1,total_test_samples,9);
+Posterior = zeros(1,total_test_samples,9);
 
-Guess_Grid_Ensembe1 = zeros(total_test_samples,1);
-Guess_Grid_Ensembe2 = zeros(total_test_samples,1);
-Guess_Grid_Ensembe3 = zeros(total_test_samples,1);
+Guess_Grid_Ensembe = zeros(total_test_samples,1);
 parfor sample_n = 1:total_test_samples
-    [label,~,~,Posterior1(1,sample_n,:)] = predict( classifier1, features_array(sample_n,:) );
-    Guess_Grid_Ensemble1(sample_n, 1) = label;
-
-    [label,~,~,Posterior2(1,sample_n,:)] = predict( classifier2, features_array(sample_n,:) );
-    Guess_Grid_Ensemble2(sample_n, 1) = label;
-
-    [label,~,~,Posterior3(1,sample_n,:)] = predict( classifier3, features_array2(sample_n,:) );
-    Guess_Grid_Ensemble3(sample_n, 1) = label;
+    [label,~,~,Posterior(1,sample_n,:)] = predict( classifier, features_array(sample_n,:) );
+    Guess_Grid_Ensemble(sample_n, 1) = label;
 end
 disp('Time to classify samples')
 toc
 
-Posterior = cat(1,Posterior1,Posterior2,Posterior3);
-Guess_Grid_Ensemble = [Guess_Grid_Ensembe1, Guess_Grid_Ensembe2, Guess_Grid_Ensembe3];
 
-for k=1:2
-    if k==1
-        disp('Classifier trained on power data only:');
-    elseif k==2
-        disp('Classifier trained on audio data only:');
-    else
-        disp('Classifier trained on both audio and power:');
-    end
-    
     
     for sample_n = 1:total_test_samples
         for g = 1:9
@@ -184,9 +135,6 @@ for k=1:2
 %     end
 %     disp(['Total being: ' num2str(sum(acc_p)) '%']);
     
-    P = 100*sum(actual_grid_classes(test_Type==0) == Posterior_Max_Grid_1(test_Type==0))/size(actual_grid_classes(test_Type==0),2);
-    A = 100*sum(actual_grid_classes(test_Type==1) == Posterior_Max_Grid_1(test_Type==1))/size(actual_grid_classes(test_Type==1),2);
     B = 100*sum(actual_grid_classes == Posterior_Max_Grid_1)/size(actual_grid_classes,2);
     disp(['Accuracy of classifier ^ on power:' num2str(P) '%,  on audio:' num2str(A) '%,  and on both:' num2str(B) '%.']);
     disp('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-end

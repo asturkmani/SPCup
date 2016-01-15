@@ -12,7 +12,7 @@ moving_median_width_P = 50;
 Time_Step_P           = 0.5;
 Percent_Overlap_P     = 0.85;
 %%~~~~~~~~~~AUDIO~~~~~~~~~~~%%
-apply_median_A        = 1;
+apply_median_A        = 0;
 moving_median_width_A = 200;
 Time_Step_A           = 0.5;
 Percent_Overlap_A     = 0.85;
