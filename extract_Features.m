@@ -42,10 +42,10 @@ function [features_array] = extract_Features( freq )
 %     Computing the AR model 
         model = arima('ARLags',1:2,'Constant',0);
         try
-            EstMdl = estimate(model,transpose(freq));
+            [~,EstMdl] = evalc('estimate(model,transpose(freq));');
             feature_AR1 = EstMdl.AR{1};
             feature_AR2 = EstMdl.AR{2};
-            feature_AR_variance = log10(EstMdl.Variance)
+            feature_AR_variance = log10(EstMdl.Variance);
         catch
             disp(['------AR Unstable------------']);
             feature_AR1 = 0;
