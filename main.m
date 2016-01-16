@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 %% Full code to create and save classifiers
     clearvars;
     tic
@@ -15,7 +15,7 @@ Percent_Overlap_P     = 0.85;
 %%~~~~~~~~~~AUDIO~~~~~~~~~~~%%
 apply_median_A        = 0;
 moving_median_width_A = 50;
-Time_Step_A           = 0.5;
+Time_Step_A           = 2;
 Percent_Overlap_A     = 0.85;
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
 
@@ -275,8 +275,8 @@ Test_Practice;
 
 % beep
 
-% load handel
-% sound(1,Fs)
+load handel
+sound(1,Fs)
 
 
 
@@ -286,6 +286,3 @@ Test_Practice;
 % clear Audio_Reco* Power_Reco* freq_peaks_*
 % clear feature_*
 % save('workspace_no_data.mat');
-
-
->>>>>>> b186db04de31d931413d0389ed4af65370d24195
