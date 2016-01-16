@@ -7,20 +7,20 @@ Fs = 1000;
 %%~~~~~~~~~~~POWER~~~~~~~~~~~~%%
 apply_median_P           = 0;
 moving_median_width_P    = -50;
-Time_Step_P              = 0.5;
+Time_Step_P              = 3;
 Percent_Overlap_P        = 0.85;
-Padding_Factor_P         = 8;
-filter_half_size_P       = 1;
+Padding_Factor_P         = 16;
+filter_half_size_P       = 2;
 second_peak_perc_thres_P = -0.9;
 use_2_peaks_code_P       = 0;
 %%~~~~~~~~~~~AUDIO~~~~~~~~~~~~%%
 apply_median_A           = 0;
 moving_median_width_A    = 50;
-Time_Step_A              = 3.5;
+Time_Step_A              = 3;
 Percent_Overlap_A        = 0.85;
-Padding_Factor_A         = 8;
-filter_half_size_A       = 1;
-second_peak_perc_thres_A = 0.8;
+Padding_Factor_A         = 16;
+filter_half_size_A       = 2;
+second_peak_perc_thres_A = 0.7;
 use_2_peaks_code_A       = 1;
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
 
@@ -35,12 +35,10 @@ Train_data_type = [];
 train_entries_counter = 1; %index for entry number
 disp('Extracting training data & ENF & features');
 for grid_name_idx = 'A':'I'
-% grid_name_idx
     % For Audio
     grid_class_number = find( ismember(grid_names, grid_name_idx) );
     recording_signal = [];
-    parfor i = 1:2
-        i
+    for i = 1:2
         % Get the recording signal
         path_to_recording = ['Grid_' grid_name_idx '/Audio_recordings/Train_Grid_' grid_name_idx '_A' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);
@@ -73,7 +71,6 @@ for grid_name_idx = 'A':'I'
     num_of_power_str = strcat('P', grid_name_idx);
     num_of_power_samples = eval(num_of_power_str);
     parfor i = 1:num_of_power_samples
-        i
         % Get the recording signal
         path_to_recording = ['Grid_' grid_name_idx '/Power_recordings/Train_Grid_' grid_name_idx '_P' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);

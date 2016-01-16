@@ -162,13 +162,6 @@ function [features_array] = extract_Features( freq )
         
 
 
-freqm = lpc(freq,10);
-est_freq = filter([0 -freqm(2:end)],1,freq);
-efreq = freq-est_freq;
-[acsfreq,~] = xcorr(efreq,'coeff');
-vefreq = var(efreq);
-efreq = mean(efreq);
-
 
 
 % Group all the features in 1 array and return it
@@ -185,6 +178,6 @@ features_array = [feature_mean, feature_variance, feature_range, feature_detaile
                   feature_mean_crossing, feature_spectral_centroid, feature_Rt, feature_derivative_max, ...
                   ...
                   feature_outlier_ratio, ...
-                  feature_deriv_crossing, mean(acsfreq), vefreq efreq, freqm
+                  feature_deriv_crossing
                   
                   ];
