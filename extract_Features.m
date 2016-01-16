@@ -47,13 +47,18 @@ function [features_array] = extract_Features( freq )
             feature_AR2 = EstMdl.AR{2};
             feature_AR_variance = log10(EstMdl.Variance);
         catch
+<<<<<<< HEAD
             disp('------AR Unstable------------');
 
+=======
+            disp(['------AR Unstable------------']);
+>>>>>>> b186db04de31d931413d0389ed4af65370d24195
             feature_AR1 = 0;
             feature_AR2 = 0;
             feature_AR_variance = 0;
         end
 
+<<<<<<< HEAD
 %            model = ar(freq,2);
 %            Bfeature_AR1 = model.a(1);
 %            Bfeature_AR2 = model.a(2);
@@ -63,14 +68,28 @@ function [features_array] = extract_Features( freq )
 %            if(feature_AR2 == Bfeature_AR2)
 %                disp(' --- 2 is correct ---');
 %            end
+=======
+           model = ar(freq,2);
+           Bfeature_AR1 = model.a(1);
+           Bfeature_AR2 = model.a(2);
+           if(feature_AR1 == Bfeature_AR1)
+               disp('--- 1 is correct ---');
+           end
+           if(feature_AR2 == Bfeature_AR2)
+               disp(' --- 2 is correct ---');
+           end
+>>>>>>> b186db04de31d931413d0389ed4af65370d24195
 
 %         [model,feature_AR_variance] = arburg(freq,2);
 %         feature_AR1 = model(1);
 %         feature_AR2 = model(2);
+<<<<<<< HEAD
 
 %         [model,feature_AR_variance] = arburg(freq,2);
 %         feature_AR1 = model(1);
 %         feature_AR2 = model(2);
+=======
+>>>>>>> b186db04de31d931413d0389ed4af65370d24195
 
 %%Our added features:
 
