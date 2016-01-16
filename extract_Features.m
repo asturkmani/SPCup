@@ -53,6 +53,8 @@ function [features_array] = extract_Features( freq )
             feature_AR2 = 0;
             feature_AR_variance = 0;
         end
+        
+        % Compute LPC model coeffecients and error
 
 %            model = ar(freq,2);
 %            Bfeature_AR1 = model.a(1);
@@ -160,6 +162,13 @@ function [features_array] = extract_Features( freq )
         
 
 
+freqm = lpc(freq,10);
+est_freq = filter([0 -freqm(2:end)],1,freq);
+efreq = freq-est_freq;
+[acsfreq,~] = xcorr(efreq,'coeff');
+vefreq = var(efreq);
+efreq = mean(efreq);
+
 
 
 % Group all the features in 1 array and return it
@@ -176,6 +185,6 @@ features_array = [feature_mean, feature_variance, feature_range, feature_detaile
                   feature_mean_crossing, feature_spectral_centroid, feature_Rt, feature_derivative_max, ...
                   ...
                   feature_outlier_ratio, ...
-                  feature_deriv_crossing
+                  feature_deriv_crossing, mean(acsfreq), vefreq efreq, freqm
                   
                   ];

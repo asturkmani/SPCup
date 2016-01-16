@@ -53,7 +53,7 @@ test_Type = zeros(50,1);
 features_array = zeros(total_test_samples,total_features);
 tic
 % Step: read ENF with no median, to see if power or audio
-parfor sample_n = 1:total_test_samples
+for sample_n = 5:total_test_samples
     p_name = [test_path_name num2str(sample_n) '.wav'];
     [test_recording, ~] = audioread(p_name);
     [~,~,~,P] = spectrogram(test_recording);
@@ -62,10 +62,10 @@ parfor sample_n = 1:total_test_samples
     % if test_Type is audio -> extract ENF with audio params, else with power params
     if test_Type(sample_n) == 0
         test_ENF = extract_ENF(test_recording, apply_median_P, moving_median_width_P, Fs, ...
-                                Time_Step_P, Percent_Overlap_P, Padding_Factor, filter_half_size);
+                                Time_Step_P, Percent_Overlap_P, Padding_Factor_P, filter_half_size_P, second_peak_perc_thres_P, use_2_peaks_code_P);
     else
         test_ENF = extract_ENF(test_recording, apply_median_A, moving_median_width_A, Fs, ...
-                                Time_Step_A, Percent_Overlap_A, Padding_Factor, filter_half_size);
+                                Time_Step_A, Percent_Overlap_A, Padding_Factor_A, filter_half_size_A, second_peak_perc_thres_A, use_2_peaks_code_A);
 %         figure; plot(test_ENF);
     end
 

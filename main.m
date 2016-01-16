@@ -4,18 +4,24 @@
 %% For every grid, and for power/audio readwav/readENF/readFeats
 % All parameters needed for extract_ENF, run 'help extract_ENF' for more details
 Fs = 1000;
-Padding_Factor = 8;
-filter_half_size = 1;
-%%~~~~~~~~~~POWER~~~~~~~~~~~%%
-apply_median_P        = 0;
-moving_median_width_P = 50;
-Time_Step_P           = 0.5;
-Percent_Overlap_P     = 0.85;
-%%~~~~~~~~~~AUDIO~~~~~~~~~~~%%
-apply_median_A        = 0;
-moving_median_width_A = 50;
-Time_Step_A           = 0.5;
-Percent_Overlap_A     = 0.85;
+%%~~~~~~~~~~~POWER~~~~~~~~~~~~%%
+apply_median_P           = 0;
+moving_median_width_P    = -50;
+Time_Step_P              = 0.5;
+Percent_Overlap_P        = 0.85;
+Padding_Factor_P         = 8;
+filter_half_size_P       = 1;
+second_peak_perc_thres_P = -0.9;
+use_2_peaks_code_P       = 0;
+%%~~~~~~~~~~~AUDIO~~~~~~~~~~~~%%
+apply_median_A           = 0;
+moving_median_width_A    = 50;
+Time_Step_A              = 3.5;
+Percent_Overlap_A        = 0.85;
+Padding_Factor_A         = 8;
+filter_half_size_A       = 1;
+second_peak_perc_thres_A = 0.8;
+use_2_peaks_code_A       = 1;
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%%
 
 % Some constants:
@@ -29,11 +35,12 @@ Train_data_type = [];
 train_entries_counter = 1; %index for entry number
 disp('Extracting training data & ENF & features');
 for grid_name_idx = 'A':'I'
-
+% grid_name_idx
     % For Audio
     grid_class_number = find( ismember(grid_names, grid_name_idx) );
     recording_signal = [];
     parfor i = 1:2
+        i
         % Get the recording signal
         path_to_recording = ['Grid_' grid_name_idx '/Audio_recordings/Train_Grid_' grid_name_idx '_A' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);
@@ -44,10 +51,10 @@ for grid_name_idx = 'A':'I'
             if(sizeT-temp>=360000)
                 
                 [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+360000)), apply_median_A, moving_median_width_A, Fs, ...
-                                 Time_Step_A, Percent_Overlap_A, Padding_Factor, filter_half_size);
+                                 Time_Step_A, Percent_Overlap_A, Padding_Factor_A, filter_half_size_A, second_peak_perc_thres_A, use_2_peaks_code_A);
             else
                 [result_freq_vs_time] = extract_ENF(recording_signal((sizeT-360000):sizeT), apply_median_A, moving_median_width_A, Fs, ...
-                                 Time_Step_A, Percent_Overlap_A, Padding_Factor, filter_half_size);
+                                 Time_Step_A, Percent_Overlap_A, Padding_Factor_A, filter_half_size_A, second_peak_perc_thres_A, use_2_peaks_code_A);
             end
 
             % Extract features from the ENF
@@ -66,6 +73,7 @@ for grid_name_idx = 'A':'I'
     num_of_power_str = strcat('P', grid_name_idx);
     num_of_power_samples = eval(num_of_power_str);
     parfor i = 1:num_of_power_samples
+        i
         % Get the recording signal
         path_to_recording = ['Grid_' grid_name_idx '/Power_recordings/Train_Grid_' grid_name_idx '_P' num2str(i) '.wav'];
         [recording_signal, ~] = audioread(path_to_recording);
@@ -76,10 +84,10 @@ for grid_name_idx = 'A':'I'
             if(sizeT-temp>=720000)
                 
                 [result_freq_vs_time] = extract_ENF(recording_signal(temp:(temp-1+720000)), apply_median_P, moving_median_width_P, Fs, ...
-                                 Time_Step_P, Percent_Overlap_P, Padding_Factor, filter_half_size);
+                                 Time_Step_P, Percent_Overlap_P, Padding_Factor_P, filter_half_size_P, second_peak_perc_thres_P, use_2_peaks_code_P);
             else
                 [result_freq_vs_time] = extract_ENF(recording_signal((sizeT-720000):sizeT), apply_median_P, moving_median_width_P, Fs, ...
-                                 Time_Step_P, Percent_Overlap_P, Padding_Factor, filter_half_size);
+                                 Time_Step_P, Percent_Overlap_P, Padding_Factor_P, filter_half_size_P, second_peak_perc_thres_P, use_2_peaks_code_P);
             end
 
             % Extract features from the ENF
